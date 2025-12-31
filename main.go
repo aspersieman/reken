@@ -87,6 +87,14 @@ func main() {
 		}
 	}
 
+	backspace := func() {
+		if len(display.Text) <= 1 {
+			display.SetText("0")
+			return
+		}
+		display.SetText(display.Text[:len(display.Text)-1])
+	}
+
 	clear := func() {
 		display.SetText("0")
 	}
@@ -108,25 +116,30 @@ func main() {
 	}
 
 	grid := container.NewGridWithColumns(4,
+		btn("C", clear),
+		btn("⌫", backspace),
+		btn("÷", func() { appendText("÷") }),
+		btn("×", func() { appendText("×") }),
+
 		btn("7", func() { appendText("7") }),
 		btn("8", func() { appendText("8") }),
 		btn("9", func() { appendText("9") }),
-		btn("÷", func() { appendText("÷") }),
+		btn("-", func() { appendText("-") }),
 
 		btn("4", func() { appendText("4") }),
 		btn("5", func() { appendText("5") }),
 		btn("6", func() { appendText("6") }),
-		btn("×", func() { appendText("×") }),
+		btn("+", func() { appendText("+") }),
 
 		btn("1", func() { appendText("1") }),
 		btn("2", func() { appendText("2") }),
 		btn("3", func() { appendText("3") }),
-		btn("-", func() { appendText("-") }),
+		btn("=", equal),
 
 		btn("0", func() { appendText("0") }),
 		btn(".", func() { appendText(".") }),
-		btn("=", equal),
-		btn("+", func() { appendText("+") }),
+		widget.NewLabel(""), // spacer
+		widget.NewLabel(""),
 	)
 
 	w.Canvas().SetOnTypedKey(func(k *fyne.KeyEvent) {
