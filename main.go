@@ -146,7 +146,9 @@ func main() {
 		switch k.Name {
 		case fyne.KeyReturn, fyne.KeyEnter:
 			equal()
-		case fyne.KeyEscape:
+		case fyne.KeyBackspace:
+			backspace()
+		case fyne.KeyDelete, fyne.KeyEscape:
 			clear()
 		}
 	})
