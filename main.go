@@ -69,6 +69,7 @@ func eval(expr string) (string, error) {
 }
 
 func main() {
+	fmt.Println("Reken Calculator v" + version)
 	a := app.New()
 	a.SetIcon(assets.ResourceIconPng)
 
@@ -111,45 +112,70 @@ func main() {
 		display.SetText(result)
 	}
 
-	btn := func(label string, fn func()) *widget.Button {
-		return widget.NewButton(label, fn)
+	handleInput := func(s string) {
+		switch s {
+		case "C":
+			clear()
+		case "=":
+			equal()
+		case "⌫":
+			backspace()
+		default:
+			appendText(s)
+		}
+	}
+
+	btn := func(label string) *widget.Button {
+		return widget.NewButton(label, func() {
+			handleInput(label)
+		})
 	}
 
 	grid := container.NewGridWithColumns(4,
-		btn("C", clear),
-		btn("⌫", backspace),
-		btn("÷", func() { appendText("÷") }),
-		btn("×", func() { appendText("×") }),
-
-		btn("7", func() { appendText("7") }),
-		btn("8", func() { appendText("8") }),
-		btn("9", func() { appendText("9") }),
-		btn("-", func() { appendText("-") }),
-
-		btn("4", func() { appendText("4") }),
-		btn("5", func() { appendText("5") }),
-		btn("6", func() { appendText("6") }),
-		btn("+", func() { appendText("+") }),
-
-		btn("1", func() { appendText("1") }),
-		btn("2", func() { appendText("2") }),
-		btn("3", func() { appendText("3") }),
-		btn("=", equal),
-
-		btn("0", func() { appendText("0") }),
-		btn(".", func() { appendText(".") }),
-		widget.NewLabel(""), // spacer
-		widget.NewLabel(""),
+		btn("C"), btn("⌫"), btn("÷"), btn("×"),
+		btn("7"), btn("8"), btn("9"), btn("-"),
+		btn("4"), btn("5"), btn("6"), btn("+"),
+		btn("1"), btn("2"), btn("3"), btn("="),
+		btn("0"), btn("."), widget.NewLabel(""), widget.NewLabel(""),
 	)
 
+	w.Canvas().SetOnTypedRune(func(r rune) {
+		fmt.Printf("Typed rune: %v\n", r)
+		switch r {
+
+			// Digits (top row + numpad)
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			handleInput(string(r))
+
+			// Operators (top row + numpad)
+		case '+', '-':
+			handleInput(string(r))
+		case '*':
+			handleInput("×")
+		case '/':
+			handleInput("÷")
+
+			// Decimal
+		case '.':
+			handleInput(".")
+		}
+	})
+
 	w.Canvas().SetOnTypedKey(func(k *fyne.KeyEvent) {
+		fmt.Printf("Typed key: %v\n", k)
 		switch k.Name {
+
+			// Equals (Enter key, including numpad Enter)
 		case fyne.KeyReturn, fyne.KeyEnter:
-			equal()
+			handleInput("=")
+
+			// Backspace
 		case fyne.KeyBackspace:
-			backspace()
-		case fyne.KeyDelete, fyne.KeyEscape:
-			clear()
+			handleInput("⌫")
+
+			// Clear
+		case fyne.KeyEscape, fyne.KeyDelete:
+			handleInput("C")
 		}
 	})
 

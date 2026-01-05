@@ -19,7 +19,7 @@ LDFLAGS  := -ldflags "-s -w -X main.version=$(VERSION)"
 all: build
 
 build:
-	@echo "→ Building $(APP_TITLE) ($(VERSION))"
+	@echo "→ Building $(APP_TITLE) ($(VERSION)): $(BIN_DIR)/$(APP_NAME)"
 	mkdir -p $(BIN_DIR)
 	CGO_ENABLED=1 go build $(LDFLAGS) -o $(BIN_DIR)/$(APP_NAME)
 
